@@ -5,7 +5,8 @@ import requests
 # Get a free API key at https://api.the-odds-api.com/
 API_KEY = '5443ef87d0968678ed7c1a90903ee666'
 
-SPORT = 'basketball_ncaab' # use the sport_key from the /sports endpoint below, or use 'upcoming' to see the next 8 games across all sports
+SPORT = 'basketball_nba' # use the sport_key from the /sports endpoint below, or use 'upcoming' to see the next 8 games across all sports
+# basketball_nba, basketball_ncaab, 
 
 REGIONS = 'us' # uk | us | eu | au. Multiple can be specified if comma delimited
 

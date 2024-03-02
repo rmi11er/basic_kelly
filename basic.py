@@ -53,43 +53,47 @@ def main():
         print("Best Odds Relative to Mean (American):", best_odds)
         print("Kelly-sized Bet:", kelly_bet)
     else:
-        # data = get_odds()
-        with open("temp.json", "r") as file:
-            data = json.load(file)
+        data = get_odds()
+        # with open("temp.json", "r") as file:
+        #     data = json.load(file)
 
         games = [i for i in range(len(data))]
 
         for game_num in games:
-            # Extract game information
-            game = data[game_num]
-            home_team = game["home_team"]
-            away_team = game["away_team"]
-            bookmakers = game["bookmakers"]
+            try:
+                # Extract game information
+                game = data[game_num]
+                home_team = game["home_team"]
+                away_team = game["away_team"]
+                bookmakers = game["bookmakers"]
 
-            home_odds = []
-            away_odds = []
+                home_odds = []
+                away_odds = []
 
-            for sportsbook_odds in bookmakers:
-                outcomes = sportsbook_odds['markets'][0]['outcomes']
-                if outcomes[0]['name'] == home_team:
-                    home_odds.append(outcomes[0]['price'])
-                    away_odds.append(outcomes[1]['price'])
+                for sportsbook_odds in bookmakers:
+                    outcomes = sportsbook_odds['markets'][0]['outcomes']
+                    if outcomes[0]['name'] == home_team:
+                        home_odds.append(outcomes[0]['price'])
+                        away_odds.append(outcomes[1]['price'])
+                    else:
+                        home_odds.append(outcomes[1]['price'])
+                        away_odds.append(outcomes[0]['price'])
+
+                home_mean = compute_arithmetic_mean(home_odds)
+                away_mean = compute_arithmetic_mean(away_odds)
+
+                kelly_bet_home, best_home_odds = compute_kelly_bet(home_odds, home_mean, K, B)
+                kelly_bet_away, best_away_odds = compute_kelly_bet(away_odds, away_mean, K, B)
+
+                if kelly_bet_away > 0.01 * B and kelly_bet_away > kelly_bet_home:
+                    print(f"Kelly-sized Bet for {away_team}, odds {best_away_odds}:{kelly_bet_away}")
+                elif kelly_bet_home > 0.01 * B and kelly_bet_home > kelly_bet_away:
+                    print(f"Kelly-sized Bet for {home_team}, odds {best_home_odds}:{kelly_bet_home}")
                 else:
-                    home_odds.append(outcomes[1]['price'])
-                    away_odds.append(outcomes[0]['price'])
-
-            home_mean = compute_arithmetic_mean(home_odds)
-            away_mean = compute_arithmetic_mean(away_odds)
-
-            kelly_bet_home, best_home_odds = compute_kelly_bet(home_odds, home_mean, K, B)
-            kelly_bet_away, best_away_odds = compute_kelly_bet(away_odds, away_mean, K, B)
-
-            if kelly_bet_away > 0.01 * B and kelly_bet_away > kelly_bet_home:
-                print(f"Kelly-sized Bet for {away_team}, odds {best_away_odds}:", kelly_bet_away)
-            elif kelly_bet_home > 0.01 * B and kelly_bet_home > kelly_bet_away:
-                print(f"Kelly-sized Bet for {home_team}, odds {best_home_odds}:", kelly_bet_home)
-            else:
-                print(f"No sizable bet for the game between {away_team} and {home_team}:")
+                    print(f"No sizable bet for the game between {away_team} and {home_team}:")
+            except Exception as e:
+                print('exception encountered:', e)
+                continue
 
 
 if __name__ == "__main__":
