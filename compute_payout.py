@@ -38,7 +38,7 @@ def parse_and_calculate(text):
                     amount_bet = float(bet_info[1])
                     total_wagered += amount_bet
         
-        if line.startswith('+'):
+        if line.startswith('+') or line.startswith('Y'):
             parts = line.split(', odds ')
             if len(parts) == 2:
                 bet_info = parts[1].split(':')
@@ -50,7 +50,7 @@ def parse_and_calculate(text):
     if bets:
         bet_data = ' '.join(bets)
         overall_payout = calc_payout_american(bet_data)
-        return num_lines, overall_payout, total_wagered
+        return num_lines, overall_payout, total_wagered, overall_payout - total_wagered
     else:
         return num_lines, 0, total_wagered
 
@@ -85,4 +85,4 @@ if __name__ == "__main__":
     with open('bets.dump', 'r') as bets_file:
         bets_string = bets_file.read()
 
-    print('num bets, winnings, amount wagered:', parse_and_calculate(bets_string))
+    print('num bets, winnings, amount wagered, profits:', parse_and_calculate(bets_string))
